@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture Voice-to-Notes Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="screen">
+        <div class="container">
+            <div class="welcome-content">
+                <h1>Lecture Voice-to-Notes Generator</h1>
+                <p class="welcome-description">Transform your lectures into organized study materials. Record audio or upload files to automatically generate transcriptions, study notes, quiz questions, and flashcards.</p>
+                
+                <div class="welcome-features">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎤</div>
+                        <h3>Record Audio</h3>
+                        <p>Capture lectures directly with our built-in recorder</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📁</div>
+                        <h3>Upload Files</h3>
+                        <p>Import existing audio files for processing</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📝</div>
+                        <h3>Study Materials</h3>
+                        <p>Generate notes, quizzes, and flashcards automatically</p>
+                    </div>
+                </div>
+
+                <div class="welcome-actions">
+                    <button class="btn btn--primary btn--lg" onclick="showRecordingScreen()">Start Recording</button>
+                    <button class="btn btn--outline btn--lg" onclick="showUploadScreen()">Upload Audio</button>
+                </div>
+
+                <div class="demo-link">
+                    <button class="btn btn--secondary" onclick="loadDemoData()">Try Demo with Sample Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recording Screen -->
+    <div id="recording-screen" class="screen hidden">
+        <div class="container">
+            <div class="recording-interface">
+                <h2>Record Your Lecture</h2>
+                
+                <div class="recording-controls">
+                    <div class="recording-status" id="recording-status">
+                        <div class="status-indicator" id="status-indicator"></div>
+                        <span id="recording-text">Ready to record</span>
+                    </div>
+                    
+                    <div class="timer" id="timer">00:00</div>
+                    
+                    <div class="audio-visualizer">
+                        <div class="audio-bars">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-buttons">
+                        <button class="btn btn--primary record-btn" id="record-btn" onclick="toggleRecording()">
+                            <span class="record-icon">🔴</span>
+                            Start Recording
+                        </button>
+                        <button class="btn btn--outline" onclick="showWelcomeScreen()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Screen -->
+    <div id="upload-screen" class="screen hidden">
+        <div class="container">
+            <div class="upload-interface">
+                <h2>Upload Audio File</h2>
+                
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-icon">📁</div>
+                    <h3>Drag & Drop Audio File</h3>
+                    <p>or click to browse files</p>
+                    <p class="file-types">Supported formats: MP3, WAV, M4A</p>
+                    <input type="file" id="file-input" accept="audio/*" hidden>
+                </div>
+                
+                <div class="upload-progress hidden" id="upload-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <span class="progress-text" id="progress-text">Uploading... 0%</span>
+                </div>
+                
+                <div class="upload-actions">
+                    <button class="btn btn--outline" onclick="showWelcomeScreen()">Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Processing Screen -->
+    <div id="processing-screen" class="screen hidden">
+        <div class="container">
+            <div class="processing-interface">
+                <h2>Processing Your Audio</h2>
+                
+                <div class="processing-steps">
+                    <div class="step" id="step-transcription">
+                        <div class="step-icon">🎵</div>
+                        <div class="step-content">
+                            <h3>Speech-to-Text</h3>
+                            <p>Converting audio to text...</p>
+                            <div class="step-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="transcription-progress"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step" id="step-notes">
+                        <div class="step-icon">📝</div>
+                        <div class="step-content">
+                            <h3>Generating Notes</h3>
+                            <p>Creating structured study notes...</p>
+                            <div class="step-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="notes-progress"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step" id="step-quiz">
+                        <div class="step-icon">❓</div>
+                        <div class="step-content">
+                            <h3>Creating Quiz</h3>
+                            <p>Generating practice questions...</p>
+                            <div class="step-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="quiz-progress"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step" id="step-flashcards">
+                        <div class="step-icon">🎴</div>
+                        <div class="step-content">
+                            <h3>Making Flashcards</h3>
+                            <p>Creating study flashcards...</p>
+                            <div class="step-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="flashcards-progress"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="results-screen" class="screen hidden">
+        <div class="container">
+            <div class="results-header">
+                <h2 id="lecture-title">Lecture Results</h2>
+                <div class="results-actions">
+                    <button class="btn btn--outline" onclick="showSettingsModal()">Settings</button>
+                    <button class="btn btn--outline" onclick="showHistoryModal()">History</button>
+                    <button class="btn btn--primary" onclick="showExportModal()">Export</button>
+                </div>
+            </div>
+            
+            <div class="results-tabs">
+                <button class="tab-btn active" onclick="showTab('transcription')">Transcription</button>
+                <button class="tab-btn" onclick="showTab('notes')">Study Notes</button>
+                <button class="tab-btn" onclick="showTab('quiz')">Quiz</button>
+                <button class="tab-btn" onclick="showTab('flashcards')">Flashcards</button>
+            </div>
+            
+            <div class="tab-content">
+                <!-- Transcription Tab -->
+                <div id="transcription-tab" class="tab-panel active">
+                    <div class="tab-header">
+                        <h3>Original Transcription</h3>
+                        <div class="tab-actions">
+                            <input type="text" class="form-control search-input" placeholder="Search in transcription..." onkeyup="searchContent(this.value)">
+                            <button class="btn btn--outline btn--sm" onclick="editContent('transcription')">Edit</button>
+                        </div>
+                    </div>
+                    <div class="content-area">
+                        <div class="transcription-content" id="transcription-content" contenteditable="false"></div>
+                    </div>
+                </div>
+                
+                <!-- Notes Tab -->
+                <div id="notes-tab" class="tab-panel hidden">
+                    <div class="tab-header">
+                        <h3>Study Notes</h3>
+                        <div class="tab-actions">
+                            <button class="btn btn--outline btn--sm" onclick="editContent('notes')">Edit</button>
+                        </div>
+                    </div>
+                    <div class="content-area">
+                        <ul class="notes-list" id="notes-content" contenteditable="false"></ul>
+                    </div>
+                </div>
+                
+                <!-- Quiz Tab -->
+                <div id="quiz-tab" class="tab-panel hidden">
+                    <div class="tab-header">
+                        <h3>Practice Quiz</h3>
+                        <div class="tab-actions">
+                            <button class="btn btn--outline btn--sm" onclick="resetQuiz()">Reset</button>
+                            <button class="btn btn--primary btn--sm" onclick="checkQuizAnswers()">Check Answers</button>
+                        </div>
+                    </div>
+                    <div class="content-area">
+                        <div class="quiz-content" id="quiz-content"></div>
+                        <div class="quiz-score hidden" id="quiz-score"></div>
+                    </div>
+                </div>
+                
+                <!-- Flashcards Tab -->
+                <div id="flashcards-tab" class="tab-panel hidden">
+                    <div class="tab-header">
+                        <h3>Study Flashcards</h3>
+                        <div class="tab-actions">
+                            <span class="flashcard-counter" id="flashcard-counter">1 / 3</span>
+                            <button class="btn btn--outline btn--sm" onclick="previousFlashcard()">Previous</button>
+                            <button class="btn btn--primary btn--sm" onclick="nextFlashcard()">Next</button>
+                        </div>
+                    </div>
+                    <div class="content-area">
+                        <div class="flashcard-container">
+                            <div class="flashcard" id="current-flashcard" onclick="flipFlashcard()">
+                                <div class="flashcard-side front">
+                                    <div class="flashcard-content" id="flashcard-question"></div>
+                                    <div class="flip-hint">Click to reveal answer</div>
+                                </div>
+                                <div class="flashcard-side back">
+                                    <div class="flashcard-content" id="flashcard-answer"></div>
+                                    <div class="flip-hint">Click to see question</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results-footer">
+                <button class="btn btn--outline" onclick="showWelcomeScreen()">New Lecture</button>
+                <button class="btn btn--secondary" onclick="saveSession()">Save Session</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="export-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="hideExportModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Export Options</h3>
+                <button class="modal-close" onclick="hideExportModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="export-options">
+                    <div class="export-format">
+                        <h4>Select Content to Export:</h4>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" checked> Transcription</label>
+                            <label><input type="checkbox" checked> Study Notes</label>
+                            <label><input type="checkbox" checked> Quiz Questions</label>
+                            <label><input type="checkbox" checked> Flashcards</label>
+                        </div>
+                    </div>
+                    <div class="export-format">
+                        <h4>Export Format:</h4>
+                        <div class="radio-group">
+                            <label><input type="radio" name="format" value="pdf" checked> PDF Document</label>
+                            <label><input type="radio" name="format" value="txt"> Text File</label>
+                            <label><input type="radio" name="format" value="csv"> CSV Spreadsheet</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--outline" onclick="hideExportModal()">Cancel</button>
+                <button class="btn btn--primary" onclick="exportContent()">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="hideSettingsModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="modal-close" onclick="hideSettingsModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-group">
+                    <label class="form-label">Theme</label>
+                    <select class="form-control" id="theme-select" onchange="changeTheme(this.value)">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="auto">Auto</option>
+                    </select>
+                </div>
+                <div class="settings-group">
+                    <label class="form-label">Auto-save Sessions</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="auto-save-toggle" checked onchange="toggleAutoSave(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <label class="form-label">Default Export Format</label>
+                    <select class="form-control" id="export-format-select">
+                        <option value="pdf">PDF</option>
+                        <option value="txt">Text</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--primary" onclick="hideSettingsModal()">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="history-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="hideHistoryModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Session History</h3>
+                <button class="modal-close" onclick="hideHistoryModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="history-list" id="history-list">
+                    <!-- History items will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--outline" onclick="clearHistory()">Clear All</button>
+                <button class="btn btn--primary" onclick="hideHistoryModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
